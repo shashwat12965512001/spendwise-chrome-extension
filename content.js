@@ -1,36 +1,57 @@
 const hostname = window.location.hostname;
-const deals = [];
 
 if (hostname.includes("flipkart")) {
-    document.querySelectorAll("._1AtVbE").forEach(card => {
-        const title = card.querySelector("._4rR01T")?.innerText;
-        const price = card.querySelector("._30jeq3")?.innerText;
-        if (title && price) deals.push({ site: 'Flipkart', title, price });
-    });
 } else if (hostname.includes("amazon")) {
-    document.querySelectorAll(".s-main-slot .s-result-item").forEach(item => {
-        const title = item.querySelector("h2 span")?.innerText;
-        const price = item.querySelector(".a-price .a-offscreen")?.innerText;
-        if (title && price) deals.push({ site: 'Amazon', title, price });
-    });
+    try {
+        const bannerImages = [];
+        const bannerItems = document.querySelectorAll("#pageContent #desktop-banner ol.a-carousel li");
+        if (typeof bannerItems != "undefined" || bannerItems != null) {
+            Object.keys(bannerItems).forEach((key) => {
+                bannerImages.push(bannerItems[key].querySelectorAll("img")[0].getAttribute("src"));
+            });
+        }
+
+        const products = [];
+        const dealItems = document.getElementById("dealsGridLinkAnchor").querySelectorAll(".DesktopDiscountAsinGrid-module__grid_pi4xEmM7RAHNMG9sGVBJ div.GridItem-module__container_PW2gdkwTj1GQzdwJjejN");
+        if (typeof dealItems != "undefined" || dealItems != null) {
+            Object.keys(dealItems).forEach((key) => {
+                const product = dealItems[key];
+                const id = product.getAttribute("data-testid")
+                const name = product.querySelectorAll('a[data-testid="product-card-link"] p')[0].textContent;
+                products.push({
+                    id: id,
+                    name: name,
+                    url: 'https://www.amazon.in/' + name + '/dp/' + id,
+                });
+            });
+        }
+
+        fetch("https://shashwat.weblytechnolab.com/api/deals", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: "Amazon",
+                data: {
+                    home_page_banner_images: bannerImages,
+                    products: products,
+                }
+            })
+        }).then(res => res.json())
+            .then(response => {
+                console.log("✅ Sent successfully:", response);
+            }).catch(err => {
+                console.error("❌ Error sending data:", err);
+            });
+
+
+    } catch (error) {
+        console.log("Error: ", error);
+    }
 } else if (hostname.includes("meesho")) {
-    document.querySelectorAll(".Card__BaseCard-sc-b3n78k-0").forEach(card => {
-        const title = card.querySelector(".Card__ProductName-sc-b3n78k-17")?.innerText;
-        const price = card.querySelector(".Card__PriceContainer-sc-b3n78k-18")?.innerText;
-        if (title && price) deals.push({ site: 'Meesho', title, price });
-    });
 } else if (hostname.includes("ajio")) {
-    document.querySelectorAll(".item").forEach(card => {
-        const title = card.querySelector(".brand")?.innerText;
-        const price = card.querySelector(".price")?.innerText;
-        if (title && price) deals.push({ site: 'Ajio', title, price });
-    });
 } else if (hostname.includes("myntra")) {
-    document.querySelectorAll(".product-base").forEach(card => {
-        const title = card.querySelector(".product-brand")?.innerText;
-        const price = card.querySelector(".product-discountedPrice")?.innerText;
-        if (title && price) deals.push({ site: 'Myntra', title, price });
-    });
 }
 
 chrome.runtime.sendMessage({ type: "deals", data: deals });
