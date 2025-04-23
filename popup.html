@@ -17,12 +17,21 @@
             margin-bottom: 10px;
             list-style: none;
         }
+
+        .container {
+            width: 200px;
+            height: 200px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 
 <body>
-    <h3>🛒 Latest Deals</h3>
-    <ul id="deal-list"></ul>
+    <div class="container">
+        <img width="50" src="shopping_cart.svg" alt="Shopping Cart" />
+        <h3>Latest Deals</h3>
+        <ul id="deal-list"></ul>
+    </div>
     <script src="popup.js"></script>
 </body>
 
