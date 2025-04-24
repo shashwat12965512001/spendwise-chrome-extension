@@ -1,4 +1,5 @@
 const hostname = window.location.hostname;
+const deals = [];
 
 if (hostname.includes("flipkart")) {
 } else if (hostname.includes("amazon")) {
@@ -12,7 +13,7 @@ if (hostname.includes("flipkart")) {
         }
 
         const products = [];
-        const dealItems = document.getElementById("dealsGridLinkAnchor").querySelectorAll(".DesktopDiscountAsinGrid-module__grid_pi4xEmM7RAHNMG9sGVBJ div.GridItem-module__container_PW2gdkwTj1GQzdwJjejN");
+        const dealItems = document.querySelectorAll("#dealsGridLinkAnchor .DesktopDiscountAsinGrid-module__grid_pi4xEmM7RAHNMG9sGVBJ div.GridItem-module__container_PW2gdkwTj1GQzdwJjejN");
         if (typeof dealItems != "undefined" || dealItems != null) {
             Object.keys(dealItems).forEach((key) => {
                 const product = dealItems[key];
@@ -26,7 +27,7 @@ if (hostname.includes("flipkart")) {
             });
         }
 
-        fetch("https://shashwat.weblytechnolab.com/api/deals", {
+        fetch("https://shashwat.weblytechnolab.com/api/platform/deals", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -38,13 +39,11 @@ if (hostname.includes("flipkart")) {
                     products: products,
                 }
             })
-        }).then(res => res.json())
-            .then(response => {
-                console.log("✅ Sent successfully:", response);
-            }).catch(err => {
-                console.error("❌ Error sending data:", err);
-            });
-
+        }).then(res => res.json()).then(response => {
+            console.log("✅ Sent successfully:", response);
+        }).catch(err => {
+            console.log("❌ Error sending data:", err);
+        });
 
     } catch (error) {
         console.log("Error: ", error);
